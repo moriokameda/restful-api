@@ -1,0 +1,32 @@
+version: "3"
+services:
+  mysql:
+    build: ./docker/mysql
+    container_name: restful-api-mysql
+    enviroment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: restful-api
+      MYSQL_USER: guest
+      MYSQL_PASSEWORD: secret
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - restful-api-mysql-data:/var/lib/mysql
+    ports:
+      - 3316:3306
+
+  workspace:
+    build:
+      context: ./docker/workspace
+    tty: true
+    environment:
+      DB_HOST: mysql
+      DB_NAME: restful-api
+      DB_USER: root
+      DB_PASSWORD: root
+    volumes:
+    - ./:/workspace
+    links:
+      - mysql
+volumes:
+  restful-api-mysql-data:
+    driver: local
