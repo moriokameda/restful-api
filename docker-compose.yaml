@@ -3,7 +3,7 @@ services:
   mysql:
     build: ./docker/mysql
     container_name: restful-api-mysql
-    enviroment:
+    environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: restful-api
       MYSQL_USER: guest
