@@ -1,0 +1,40 @@
+spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  thymeleaf:
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+  resources:
+    cache:
+      period: 0
+    chain:
+      compressed: true
+      strategy:
+        content:
+          enabled: true
+          paths: /**
+    add-mappings: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://localhost:3316/restful-api?useUnicode=true&characterEncoding=utf8"
+    username: guest
+    password: secret
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  web:
+    resources:
+      add-mappings: true
+doma:
+  dialect: mysql
+
+server:
+  port: 8005
+logging:
+  level:
+    org.springframework.web: debug
+    org.hibernate: error
