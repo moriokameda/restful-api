@@ -1,0 +1,26 @@
+version: "3"
+
+tasks:
+  migration-create:
+    cmds:
+      - migrate create -dir './db/migrations' -ext sql {{.name}}
+    silent: true
+
+  migration-up:
+    cmds:
+      - migrate -database "mysql://$DB_USER:$DB_PASSWORD@tcp($DB_HOST:3306)/$DB_NAME?charset=utf8&parseTime=true" -path './db/migrations' up {{.step}}
+    silent: true
+
+  migration-down:
+    cmds:
+      - migrate -database "mysql://$DB_USER:$DB_PASSWORD@tcp($DB_HOST:3306)/$DB_NAME?charset=utf8&parseTime=true" -path './db/migrations' down {{.step}}
+    silent: true
+
+  migration-version:
+    cmds:
+      - migrate -database "mysql://$DB_USER:$DB_PASSWORD@tcp($DB_HOST:3306)/$DB_NAME?charset=utf8&parseTime=true" -path './db/migrations' version
+    silent: true
+
+  migration-force:
+    cmds:
+      - migrate -database "mysql://$DB_USER:$DB_PASSWORD@tcp($DB_HOST:3306)/$DB_NAME?charset=utf8&parseTime=true" -path './db/migrations' force {{.version}}
