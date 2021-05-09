@@ -1,9 +1,411 @@
 openapi: 3.0.3
 info:
-  title: $Title$
-  description: $Title$
+  title: Restful-API
+  description: Restful-APIの基本的な構成のswagger
+  license:
+    name: moriokameda
+    url: 'http://www.apache.org/licence/LICENSE-2.0.html'
   version: 1.0.0
+externalDocs:
+  description: swaggerを参照
+  url: 'http://swagger.io'
 servers:
-  - url: '$https$'
+  - url: 'http://localhost:8005/api'
+tags:
+  - name: product
+    description: 商品についてのAPI
+  - name: product-image
+    description: 商品イメージAPIについての説明
+components:
+  parameters:
+    product_id:
+      name: id
+      in: path
+      required: true
+      description: 商品ID
+      schema:
+        type: integer
+    image_path:
+      name: image_path
+      in: path
+      required: true
+      description: 商品画像パス名
+      style: form
+      schema:
+        type: string
+    extension:
+      name: extension
+      in: path
+      required: true
+      style: form
+      schema:
+        type: string
+    title:
+      name: title
+      in: query
+      required: false
+      description: 商品名検索キーワード
+      style: form
+      explode: true
+      schema:
+        type: string
+  schemas:
+    id:
+      type: integer
+      description: 商品id
+    title:
+      type: string
+      description: 商品タイトル
+    description:
+      type: string
+      description: 商品説明
+    price:
+      type: integer
+      description: 商品価格
+    image_path:
+      type: string
+      description: 商品画像
+    postProductParam:
+      required:
+        - title
+        - description
+        - price
+      type: object
+      properties:
+        title:
+          $ref: "#/components/schemas/title"
+        description:
+          $ref: "#/components/schemas/description"
+        price:
+          $ref: "#/components/schemas/price"
+    productResponse:
+      type: object
+      description: 商品のレスポンス
+      properties:
+        id:
+          $ref: "#/components/schemas/id"
+        title:
+          $ref: "#/components/schemas/title"
+        description:
+          $ref: "#/components/schemas/description"
+        price:
+          $ref: "#/components/schemas/price"
+        image_path:
+          $ref: "#/components/schemas/image_path"
+    productsResponse:
+      type: array
+      description: 商品一覧のレスポンス
+      items:
+        $ref: "#/components/schemas/productResponse"
+    productImageResponse:
+      type: object
+      properties:
+        productImage:
+          type: object
+          description: 商品画像
+          format: binary
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+        code:
+          type: integer
+          description: エラーコード
+        detail:
+          type: array
+          items:
+            type: string
+          description: エラー詳細
+        stackTrace:
+          type: array
+          items:
+            type: object
+
 paths:
-  $END$
+  /products:
+    get:
+      tags:
+        - product
+      summary: 商品(複数)情報の取得を行う　タイトルに検索ワードが入っていれば絞り込み検索
+      description: 商品(複数)情報の取得を行う　タイトルに検索ワードが入っていれば絞り込み検索
+      parameters:
+        - $ref: "#/components/parameters/title"
+      responses:
+        200:
+          description: JSON形式で商品一覧を返す
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productsResponse"
+        400:
+          description: 不正なパラメータ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - product
+      summary: 商品登録(1件)のAPI
+      description: 商品登録(1件)のAPI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/postProductParam"
+      responses:
+        201:
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponse"
+        400:
+          description: 不正なパラメータ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /products/{id}:
+    get:
+      tags:
+        - product
+      summary: 商品の取得(1件)
+      parameters:
+        - $ref: "#/components/parameters/product_id"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: notFound
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - product
+      summary: 商品(1件）の更新
+      parameters:
+        - $ref: "#/components/parameters/product_id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/postProductParam"
+      responses:
+        200:
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponse"
+        400:
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: id not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - product
+      summary: 商品削除
+      parameters:
+        - $ref: "#/components/parameters/product_id"
+      responses:
+        204:
+          description: 商品削除される。
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: id not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /products/{id}/images:
+    patch:
+      tags:
+        - productImage
+      summary: 商品画像更新
+      parameters:
+        - $ref: "#/components/parameters/product_id"
+      requestBody:
+        description: 商品画像
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/productImageResponse"
+      responses:
+        200:
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponse"
+        400:
+          description: 不正なパラメータ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: id not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      description: 商品画像削除(１件)
+      parameters:
+        - $ref: "#/components/parameters/product_id"
+      responses:
+        200:
+          description: 商品画像の削除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: id not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /products/{id}/images/{imagepath}.{extention}:
+    get:
+      tags:
+        - productImage
+      summary: 商品画像取得
+      parameters:
+        - $ref: "#/components/parameters/product_id"
+        - $ref: "#/components/parameters/image_path"
+        - $ref: "#/components/parameters/extension"
+      responses:
+        200:
+          description: 商品画像表示
+          content:
+            image/*:
+              schema:
+                $ref: "#/components/schemas/productImageResponse"
+        400:
+          description: 不正なパラメータ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        401:
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: id not found or image_path not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      description:
