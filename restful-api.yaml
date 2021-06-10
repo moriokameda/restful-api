@@ -14,7 +14,7 @@ servers:
 tags:
   - name: product
     description: 商品についてのAPI
-  - name: product-image
+  - name: productImage
     description: 商品イメージAPIについての説明
 components:
   parameters:
@@ -339,6 +339,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
     delete:
+      tags:
+        - productImage
       description: 商品画像削除(１件)
       parameters:
         - $ref: "#/components/parameters/product_id"
@@ -407,5 +409,3 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-    delete:
-      description:

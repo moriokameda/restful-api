@@ -48,6 +48,9 @@ dependencies {
 
 //	apacheの設定
 	implementation("commons-io:commons-io:2.8.0")
+	implementation("org.apache.tika:tika-parsers:1.24.1")
+	implementation("org.apache.commons:commons-dbcp2:2.8.0")
+
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 //	mysqlの設定
